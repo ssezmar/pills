@@ -10,6 +10,33 @@ function App() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState('default');
+  const [showValentine, setShowValentine] = useState(false);
+  const [petalWave, setPetalWave] = useState(0);
+  const [glow, setGlow] = useState(false);
+  const [petals, setPetals] = useState([]);
+
+  useEffect(() => {
+    if (petalWave > 0) {
+      const newPetals = [...Array(70)].map(() => ({
+        left: Math.random() * 100,
+        rotate: Math.random() * 360,
+        duration: 5 + Math.random() * 4,
+        delay: Math.random() * 1.5,
+        img: loveImages[Math.floor(Math.random() * loveImages.length)]
+      }));
+      setPetals(newPetals);
+
+      // Reset wave after some time if нужно
+      const timer = setTimeout(() => setPetals([]), 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [petalWave]);
+
+  const loveImages = Array.from({ length: 44 }, (_, i) => 
+    `/love/sticker${i + 1}.webp`
+  );
+
+
 
   // Load data and request notification permission
   useEffect(() => {
@@ -148,7 +175,10 @@ function App() {
   const percentage = totalMeds > 0 ? (takenToday / totalMeds) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 relative overflow-hidden">
+    <div className={`min-h-screen ... transition-all duration-1000 ${
+  glow ? "bg-gradient-to-br from-rose-100 via-pink-100 to-red-100" : ""
+}`}
+>
       
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -219,6 +249,21 @@ function App() {
             </div>
           )}
         </div>
+
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setShowValentine(true)}
+            className="group relative px-8 py-4 text-lg font-bold rounded-full 
+                      bg-gradient-to-r from-rose-500 via-pink-500 to-red-500
+                      text-white shadow-2xl overflow-hidden
+                      hover:scale-110 transition-all duration-500"
+          >
+            <span className="relative z-10">💖 Для тебя, Мария Александровна!</span>
+            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition duration-500 blur-xl" />
+          </button>
+        </div>
+
+
 
         {/* Empty state */}
         {medications.length === 0 && !showAddForm && (
@@ -454,6 +499,72 @@ function App() {
           </Card>
         )}
       </div>
+      {showValentine && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xl flex items-center justify-center z-50 animate-fade-in">
+          <div className="relative bg-white/80 backdrop-blur-2xl rounded-3xl p-10 max-w-md w-full shadow-[0_20px_80px_rgba(255,0,100,0.3)] text-center animate-scale-in">
+
+            <button
+              onClick={() => setShowValentine(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">
+              С Днём Святого Валентина!!!
+            </h2>
+
+            <p className="text-gray-700 mb-8 text-lg leading-relaxed">
+              Ты делаешь каждый мой день светлее.  
+              Спасибо, что ты есть, МАЛЕНЬКИЙ ВКУСНЕНЬКИЙ МАЛЫШОЧЕК ❤️❤️❤️
+            </p>
+
+            <button
+              onClick={() => {
+                setPetalWave(prev => prev + 1);
+                setGlow(true);
+                setTimeout(() => setGlow(false), 2000);
+              }}
+              className="relative px-8 py-3 rounded-full 
+                        bg-gradient-to-r from-rose-500 to-red-500 
+                        text-white font-bold text-lg shadow-2xl
+                        hover:scale-110 transition-all duration-300
+                        animate-pulse"
+            >
+              Открыть ❤️
+            </button>
+          </div>
+        </div>
+      )}
+
+          {petals.length > 0 && (
+  <div className="fixed inset-0 pointer-events-none z-[60]">
+    {petals.map((petal, i) => (
+      <div
+        key={i}
+        className="absolute animate-fall"
+        style={{
+          left: `${petal.left}%`,
+          top: "-80px",
+          animationDuration: `${petal.duration}s`,
+          animationDelay: `${petal.delay}s`,
+          transform: `rotate(${petal.rotate}deg)`,
+        }}
+      >
+        <img
+          src={petal.img}
+          className="w-14 h-14 object-contain drop-shadow-[0_10px_25px_rgba(255,0,120,0.6)] 
+                     opacity-100 brightness-110 contrast-110"
+        />
+      </div>
+    ))}
+  </div>
+)}
+
+
+
+
+
     </div>
   );
 }
