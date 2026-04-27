@@ -21,16 +21,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet" />
 
     <script>
-      // Apply saved theme before paint to avoid flash
+      // Apply saved theme (incl. custom palette) before paint to avoid flash
       (function () {
         try {
+          var html = document.documentElement;
           var saved = localStorage.getItem('hub-theme');
-          var themes = ['light', 'dark', 'midnight', 'forest', 'crimson'];
-          if (saved && themes.indexOf(saved) !== -1) {
-            document.documentElement.setAttribute('data-theme', saved);
-          } else {
-            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+          var themes = ['light', 'dark', 'midnight', 'forest', 'crimson', 'custom'];
+          var theme = (saved && themes.indexOf(saved) !== -1)
+            ? saved
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          html.setAttribute('data-theme', theme);
+
+          if (theme === 'custom') {
+            var raw = localStorage.getItem('hub-theme-custom');
+            var p = { mode: 'dark', accent: '#7c5cff', accent2: '#ff5cc8' };
+            if (raw) { try { p = Object.assign(p, JSON.parse(raw)); } catch (e) {} }
+            var bg = p.mode === 'light' ? '#ffffff' : '#0a0a0a';
+            var L = {
+              '--bg':'#ffffff','--bg-elev':'#ffffff','--bg-subtle':'#fafafa',
+              '--text':'#171717','--text-secondary':'#4d4d4d','--text-muted':'#808080',
+              '--border':'rgba(0,0,0,0.08)','--border-strong':'#ebebeb','--inner-glow':'#fafafa',
+              '--shadow-card':'rgba(0,0,0,0.08) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 2px, rgba(0,0,0,0.04) 0 8px 8px -8px, var(--inner-glow) 0 0 0 1px inset',
+              '--shadow-ring':'rgba(0,0,0,0.08) 0 0 0 1px','--grid-color':'rgba(0,0,0,0.04)',
+              '--accent-green':'#17a25b','--accent-amber':'#d97706','--accent-red':'#ff5b4f'
+            };
+            var D = {
+              '--bg':'#0a0a0a','--bg-elev':'#111111','--bg-subtle':'#161616',
+              '--text':'#ededed','--text-secondary':'#a1a1a1','--text-muted':'#6e6e6e',
+              '--border':'rgba(255,255,255,0.10)','--border-strong':'#262626','--inner-glow':'#1a1a1a',
+              '--shadow-card':'rgba(255,255,255,0.08) 0 0 0 1px, rgba(0,0,0,0.4) 0 2px 4px, rgba(0,0,0,0.6) 0 8px 24px -8px, var(--inner-glow) 0 0 0 1px inset',
+              '--shadow-ring':'rgba(255,255,255,0.10) 0 0 0 1px','--grid-color':'rgba(255,255,255,0.04)',
+              '--accent-green':'#4ade80','--accent-amber':'#fbbf24','--accent-red':'#ff7a70'
+            };
+            var base = p.mode === 'light' ? L : D;
+            for (var k in base) html.style.setProperty(k, base[k]);
+            html.style.setProperty('--accent-blue', p.accent);
+            html.style.setProperty('--link', p.accent);
+            html.style.setProperty('--focus', p.accent);
+            html.style.setProperty('--accent-pink', p.accent2);
+            html.style.setProperty('--badge-bg', 'color-mix(in srgb, ' + p.accent + ' ' + (p.mode === 'light' ? 14 : 22) + '%, ' + bg + ')');
+            html.style.setProperty('--badge-text', p.accent);
           }
         } catch (e) {}
       })();

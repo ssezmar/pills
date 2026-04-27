@@ -1,5 +1,4 @@
 import { LayoutDashboard, ListChecks, Repeat, Pill, Settings } from 'lucide-react';
-import { ThemeSwitcher } from './ThemeSwitcher.jsx';
 
 export function buildNav(showPills) {
   const base = [
@@ -17,7 +16,7 @@ function isActive(route, href) {
   return route === href || route.startsWith(href + '/');
 }
 
-export function Header({ route, navigate, theme, setTheme, showPills }) {
+export function Header({ route, navigate, showPills }) {
   const nav = buildNav(showPills);
 
   return (
@@ -54,9 +53,6 @@ export function Header({ route, navigate, theme, setTheme, showPills }) {
               );
             })}
           </nav>
-          <div className="header-actions">
-            <ThemeSwitcher theme={theme} setTheme={setTheme} />
-          </div>
         </div>
       </header>
 

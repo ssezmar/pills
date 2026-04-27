@@ -14,9 +14,20 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function App() {
-  const [theme, setTheme] = useTheme();
+  const { theme, setTheme, custom, setCustom } = useTheme();
   const [route, navigate] = useRoute();
   const [settings, setSettings] = useLocalStorage('hub-settings', DEFAULT_SETTINGS);
+
+  const settingsPage = (
+    <SettingsPage
+      settings={settings}
+      setSettings={setSettings}
+      theme={theme}
+      setTheme={setTheme}
+      custom={custom}
+      setCustom={setCustom}
+    />
+  );
 
   let page;
   if (route.startsWith('/tasks')) {
@@ -24,26 +35,20 @@ export default function App() {
   } else if (route.startsWith('/habits')) {
     page = <HabitsPage />;
   } else if (route.startsWith('/pills')) {
-    if (settings.pillsEnabled) {
-      page = <PillsPage ownerName={settings.pillsOwnerName} />;
-    } else {
-      page = <SettingsPage settings={settings} setSettings={setSettings} />;
-    }
+    page = settings.pillsEnabled ? (
+      <PillsPage ownerName={settings.pillsOwnerName} />
+    ) : (
+      settingsPage
+    );
   } else if (route.startsWith('/settings')) {
-    page = <SettingsPage settings={settings} setSettings={setSettings} />;
+    page = settingsPage;
   } else {
     page = <DashboardPage navigate={navigate} settings={settings} />;
   }
 
   return (
     <>
-      <Header
-        route={route}
-        navigate={navigate}
-        theme={theme}
-        setTheme={setTheme}
-        showPills={!!settings.pillsEnabled}
-      />
+      <Header route={route} navigate={navigate} showPills={!!settings.pillsEnabled} />
       <main>{page}</main>
       <footer className="footer">
         <div className="container footer-inner">

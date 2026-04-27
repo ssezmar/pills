@@ -1,6 +1,7 @@
 import { Pill, Download, Upload, Trash2, Info } from 'lucide-react';
+import { ThemePicker } from '../components/ThemePicker.jsx';
 
-export function SettingsPage({ settings, setSettings }) {
+export function SettingsPage({ settings, setSettings, theme, setTheme, custom, setCustom }) {
   const togglePills = () => setSettings({ ...settings, pillsEnabled: !settings.pillsEnabled });
 
   const exportAll = () => {
@@ -53,9 +54,12 @@ export function SettingsPage({ settings, setSettings }) {
           <p className="section-eyebrow">Settings</p>
           <h1 className="page-title">Настройки</h1>
           <p className="page-subtitle">
-            Включай разделы и управляй данными. Всё хранится локально в браузере.
+            Темы, разделы и данные. Всё хранится локально в браузере.
           </p>
         </div>
+
+        <p className="card-eyebrow">Тема оформления</p>
+        <ThemePicker theme={theme} setTheme={setTheme} custom={custom} setCustom={setCustom} />
 
         <p className="card-eyebrow">Разделы</p>
         <div className="settings-list" style={{ marginBottom: 32 }}>
